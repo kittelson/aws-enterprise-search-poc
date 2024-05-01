@@ -11,6 +11,7 @@ import dateutil.parser
 from chat import Chat
 from fsi_agent import FSIAgent
 from boto3.dynamodb.conditions import Key
+from botocore.exceptions import ClientError
 from langchain.llms.bedrock import Bedrock
 
 # Create reference to DynamoDB tables
@@ -24,6 +25,7 @@ dynamodb = boto3.resource('dynamodb',region_name=os.environ['AWS_REGION'])
 s3_client = boto3.client('s3',region_name=os.environ['AWS_REGION'],config=boto3.session.Config(signature_version='s3v4',))
 s3_object = boto3.resource('s3')
 bedrock_client = boto3_session.client(service_name="bedrock-runtime")
+bedrock_base_client = boto3_session.client(service_name="bedrock")
 
 # --- Lex v2 request/response helpers (https://docs.aws.amazon.com/lexv2/latest/dg/lambda-response-format.html) ---
 
@@ -774,14 +776,20 @@ def invoke_fm(prompt):
     """
     Invokes Foundational Model endpoint hosted on Amazon Bedrock and parses the response.
     """
-    chat = Chat(prompt)
-    llm = Bedrock(client=bedrock_client, model_id="anthropic.claude-v2:1", region_name=os.environ['AWS_REGION']) # anthropic.claude-instant-v1 / anthropic.claude-3-sonnet-20240229-v1:0
-    llm.model_kwargs = {'max_tokens_to_sample': 350}
-    lex_agent = FSIAgent(llm, chat.memory)
-    
-    # formatted_prompt = "\n\nHuman: " + prompt + " \n\nAssistant:"
-    message = lex_agent.run(input=prompt)
 
+    chat = Chat(prompt)
+    try:
+        print(os.environ['AWS_REGION'])
+        llm = Bedrock(client=bedrock_client, model_id="anthropic.claude-v2:1", region_name=os.environ['AWS_REGION']) # anthropic.claude-instant-v1 / anthropic.claude-3-sonnet-20240229-v1:0
+        llm.model_kwargs = {'max_tokens_to_sample': 350}
+        lex_agent = FSIAgent(llm, chat.memory)
+
+        # formatted_prompt = "\n\nHuman: " + prompt + " \n\nAssistant:"
+        message = lex_agent.run(input=prompt)
+    except ClientError as e:
+        print("Couldn't invoke the LLM.")
+        print(e)
+        return "I'm sorry, I'm unable to use this model. Please try again."
     return message
 
 def genai_intent(intent_request):

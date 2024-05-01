@@ -1,20 +1,30 @@
 # If not already forked, fork the remote repository (https://github.com/aws-samples/generative-ai-amazon-bedrock-langchain-agent-example) and change working directory to shell folder
 # cd generative-ai-amazon-bedrock-langchain-agent-example/shell/
-# chmod u+x create-stack.sh
-# source ./create-stack.sh
+# chmod u+x update-stack.sh
+# source ./update-stack.sh
 
-export UNIQUE_IDENTIFIER=$(uuidgen | tr '[:upper:]' '[:lower:]' | tr -d '-' | cut -c 1-5)
-export S3_ARTIFACT_BUCKET_NAME=$STACK_NAME-$UNIQUE_IDENTIFIER
+export S3_ARTIFACT_BUCKET_NAME=$STACK_NAME-57447
 
 export DATA_LOADER_S3_KEY="agent/lambda/data-loader/loader_deployment_package.zip"
 export LAMBDA_HANDLER_S3_KEY="agent/lambda/agent-handler/agent_deployment_package.zip"
 export LEX_BOT_S3_KEY="agent/bot/lex.zip"
 
+# will need to use the correct names from the original stack deployment
 echo "STACK_NAME: $STACK_NAME"
 echo "S3_ARTIFACT_BUCKET_NAME: $S3_ARTIFACT_BUCKET_NAME"
+echo "AWS_REGION: $AWS_REGION"
 
+# Create zip file for agent handler
+base_dir=$(pwd)
+source_dir="../agent/lambda/agent-handler"
+zip_file_name="agent_deployment_package"
+cd $source_dir
+zip -r $zip_file_name.zip .
 
-aws s3 mb s3://$S3_ARTIFACT_BUCKET_NAME --region $AWS_REGION
+cd $base_dir
+
+echo "Created $zip_file_name.zip from directory $source_dir"
+
 aws s3 cp ../agent/ s3://$S3_ARTIFACT_BUCKET_NAME/agent/ --region $AWS_REGION --recursive --exclude ".DS_Store" --exclude "*/.DS_Store"
 
 export BEDROCK_LANGCHAIN_PDFRW_LAYER_ARN=$(aws lambda publish-layer-version \
@@ -35,10 +45,9 @@ export CFNRESPONSE_LAYER_ARN=$(aws lambda publish-layer-version \
     --region $AWS_REGION \
     --query LayerVersionArn --output text)
 
-export GITHUB_TOKEN_SECRET_NAME=$(aws secretsmanager create-secret --name $STACK_NAME-git-pat \
---secret-string $GITHUB_PAT --region $AWS_REGION --query Name --output text)
+export GITHUB_TOKEN_SECRET_NAME=$STACK_NAME-git-pat
 
-aws cloudformation create-stack \
+aws cloudformation update-stack \
 --stack-name $STACK_NAME \
 --template-body file://../cfn/GenAI-FSI-Agent.yml \
 --parameters \
@@ -96,7 +105,7 @@ aws kendra create-faq \
     --file-format "CSV_WITH_HEADER" \
     --region $AWS_REGION
 
-aws kendra start-data-source-sync-job --id $KENDRA_WEBCRAWLER_DATA_SOURCE_ID --index-id $KENDRA_INDEX_ID --region $AWS_REGION
+#aws kendra start-data-source-sync-job --id $KENDRA_WEBCRAWLER_DATA_SOURCE_ID --index-id $KENDRA_INDEX_ID --region $AWS_REGION
 
 export AMPLIFY_APP_ID=$(aws cloudformation describe-stacks \
     --stack-name $STACK_NAME \
@@ -108,4 +117,4 @@ export AMPLIFY_BRANCH=$(aws cloudformation describe-stacks \
     --region $AWS_REGION \
     --query 'Stacks[0].Outputs[?OutputKey==`AmplifyBranch`].OutputValue' --output text)
 
-aws amplify start-job --app-id $AMPLIFY_APP_ID --branch-name $AMPLIFY_BRANCH --job-type 'RELEASE' --region $AWS_REGION
+#aws amplify start-job --app-id $AMPLIFY_APP_ID --branch-name $AMPLIFY_BRANCH --job-type 'RELEASE' --region $AWS_REGION
