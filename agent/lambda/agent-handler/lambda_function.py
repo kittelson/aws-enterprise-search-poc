@@ -680,7 +680,7 @@ def loan_application(intent_request):
             intent['confirmationState']="Confirmed"
             intent['state']="Fulfilled"
 
-        s3_client.download_file(s3_artifact_bucket, 'agent/assets/Mortgage-Loan-Application.pdf', '/tmp/Mortgage-Loan-Application.pdf')
+        s3_client.download_file(s3_artifact_bucket, 'agent/assets_bak/Mortgage-Loan-Application.pdf', '/tmp/Mortgage-Loan-Application.pdf')
 
         print("initializing reader")
         reader = pdfrw.PdfReader('/tmp/Mortgage-Loan-Application.pdf')
@@ -720,13 +720,13 @@ def loan_application(intent_request):
             writer.write(output_stream)
 
             
-        s3_client.upload_file('/tmp/Mortgage-Loan-Application-Completed.pdf', s3_artifact_bucket, 'agent/assets/Mortgage-Loan-Application-Completed.pdf')
+        s3_client.upload_file('/tmp/Mortgage-Loan-Application-Completed.pdf', s3_artifact_bucket, 'agent/assets_bak/Mortgage-Loan-Application-Completed.pdf')
 
         # Create loan application doc in S3
         URLs=[]
 
         # create_presigned_url(bucket_name, object_name, expiration=600):
-        URLs.append(create_presigned_url(s3_artifact_bucket,'agent/assets/Mortgage-Loan-Application-Completed.pdf',3600))
+        URLs.append(create_presigned_url(s3_artifact_bucket,'agent/assets_bak/Mortgage-Loan-Application-Completed.pdf',3600))
         
         mortgage_app = 'Your loan application is nearly complete! Please follow the link for the last few bits of information: ' + URLs[0]
 
