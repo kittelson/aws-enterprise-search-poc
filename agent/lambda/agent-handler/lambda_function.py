@@ -103,27 +103,7 @@ def elicit_intent(intent_request, session_attributes, message):
             {
                 'contentType': 'PlainText', 
                 'content': message
-            },
-            {
-                'contentType': 'ImageResponseCard',
-                'imageResponseCard': {
-                    "buttons": [
-                        {
-                            "text": "Loan Application",
-                            "value": "Loan Application"
-                        },
-                        {
-                            "text": "Loan Calculator",
-                            "value": "Loan Calculator"
-                        },
-                        {
-                            "text": "Ask GenAI",
-                            "value": "What kind of questions can the Assistant answer?"
-                        }
-                    ],
-                    "title": "How can I help you?"
-                }
-            }     
+            }
         ]
     }
 
@@ -816,9 +796,8 @@ def dispatch(intent_request):
     username = slots['UserName'] if 'UserName' in slots else None
     intent_name = intent_request['sessionState']['intent']['name']
 
-    if intent_name == 'VerifyIdentity':
-        return verify_identity(intent_request)
-    elif intent_name == 'LoanApplication':
+
+    if intent_name == 'LoanApplication':
         return loan_application(intent_request)
     elif intent_name == 'LoanCalculator':
         return loan_calculator(intent_request)

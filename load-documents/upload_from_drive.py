@@ -8,6 +8,10 @@ LOCAL_DIR = "/Users/ryangallagher/projects/documentation/ICE-tool"
 def upload_files_to_s3(bucket_name, local_folder_path):
     s3 = boto3.client('s3')
 
+    # Ensure local_folder_path ends with '/'
+    if not local_folder_path.endswith('/'):
+        local_folder_path += '/'
+
     for root, dirs, files in os.walk(local_folder_path):
         for file in files:
             local_file = os.path.join(root, file)

@@ -12,9 +12,9 @@ class Tools:
         print("Initializing Tools")
         self.tools = [
             Tool(
-                name="AnyCompany",
+                name="Kittelson",
                 func=self.kendra_search,
-                description="Use this tool to answer questions about AnyCompany.",
+                description="Use this tool to answer questions about Kittelson.",
             )
         ]
 
@@ -43,6 +43,7 @@ class Tools:
     def kendra_search(self, question):
         """
         Performs a Kendra search using the Query API.
+        This data is also going to be enriched with entity classification via comprehend.
         """
         kendra = boto3.client('kendra')
 
