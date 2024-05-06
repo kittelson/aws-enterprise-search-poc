@@ -725,4 +725,9 @@ pre code {
   .contact .social-icons a .svg-inline--fa {
     margin-top: 7px;
   }
+
+  .km-iframe-dimension-with-popup {
+    width: 600px !important;
+  }
+
 }
