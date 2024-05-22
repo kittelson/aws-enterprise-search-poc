@@ -3,6 +3,7 @@ import os
 
 s3 = boto3.client('s3')
 bucket_name = 'enterprise-search-poc-57447'
+src_directory = 'projects/'
 new_folder = 'entity_analysis/'
 
 # Define the maximum sizes for each file type
@@ -15,7 +16,7 @@ max_sizes = {
 
 # List all files in the bucket
 paginator = s3.get_paginator('list_objects_v2')
-pages = paginator.paginate(Bucket=bucket_name)
+pages = paginator.paginate(Bucket=bucket_name, Prefix=src_directory)
 
 for page in pages:
     for obj in page['Contents']:
