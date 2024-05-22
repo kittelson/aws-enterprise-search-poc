@@ -22,9 +22,11 @@ for page in pages:
         file_key = obj['Key']
         file_size = obj['Size']
         file_extension = os.path.splitext(file_key)[1]
+        filename = os.path.basename(file_key)
 
         # Check if the file type is one of the specified types and its size is within the limit
-        if file_extension in max_sizes and file_size <= max_sizes[file_extension]:
+        if file_extension in max_sizes and file_size <= max_sizes[file_extension] and not filename.startswith(('_', '.')):
+
             # Copy the file to the new folder
             copy_source = {
                 'Bucket': bucket_name,
