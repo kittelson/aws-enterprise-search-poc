@@ -185,16 +185,36 @@
         </div><!--//container-->
     </section><!--//contact-->
 
-    <script type="text/javascript">
-    (function(d, m){
-        var kommunicateSettings =
-            {"appId":"2aacc9a896e2efc08d5ab974cc53b3c64","popupWidget":true,"automaticChatOpenOnNavigation":true};
-        var s = document.createElement("script"); s.type = "text/javascript"; s.async = true;
-        s.src = "https://widget.kommunicate.io/v2/kommunicate.app";
-        var h = document.getElementsByTagName("head")[0]; h.appendChild(s);
-        window.kommunicate = m; m._globals = kommunicateSettings;
-    })(document, window.kommunicate || {});
-/* NOTE : Use web server to view HTML files as real-time update will not work if you directly open the HTML file in the browser. */
+<!--    <script type="text/javascript">-->
+<!--    (function(d, m){-->
+<!--        var kommunicateSettings =-->
+<!--            {"appId":"2aacc9a896e2efc08d5ab974cc53b3c64","popupWidget":true,"automaticChatOpenOnNavigation":true};-->
+<!--        var s = document.createElement("script"); s.type = "text/javascript"; s.async = true;-->
+<!--        s.src = "https://widget.kommunicate.io/v2/kommunicate.app";-->
+<!--        var h = document.getElementsByTagName("head")[0]; h.appendChild(s);-->
+<!--        window.kommunicate = m; m._globals = kommunicateSettings;-->
+<!--    })(document, window.kommunicate || {});-->
+<!--/* NOTE : Use web server to view HTML files as real-time update will not work if you directly open the HTML file in the browser. */-->
+<!--</script>-->
+    <script src="https://d37usnljo5te6b.cloudfront.net/lex-web-ui-loader.min.js"></script>
+<script>
+  var loaderOpts = {
+    baseUrl: 'https://d37usnljo5te6b.cloudfront.net/',
+    shouldLoadMinDeps: true
+  };
+  var loader = new ChatBotUiLoader.IframeLoader(loaderOpts);
+  var chatbotUiConfig = {
+          /* Example of setting session attributes on parent page
+          lex: {
+            sessionAttributes: {
+              userAgent: navigator.userAgent,
+              QNAClientFilter: ''
+            }
+          }
+          */
+        };
+  loader.load(chatbotUiConfig)
+    .catch(function (error) { console.error(error); });
 </script>
       
     <!-- ******FOOTER****** --> 
@@ -213,5 +233,6 @@
     
         
 </body>
+
 </html> 
 

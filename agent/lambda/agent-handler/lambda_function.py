@@ -778,8 +778,8 @@ def genai_intent(intent_request):
     Sends user utterance to Foundational Model endpoint via 'invoke_fm' function.
     """
     session_attributes = intent_request['sessionState'].get("sessionAttributes") or {}
-    
-    if intent_request['invocationSource'] == 'DialogCodeHook':
+    print(str(intent_request))
+    if intent_request['invocationSource'] == 'DialogCodeHook' or intent_request['invocationSource'] == 'FulfillmentCodeHook':
         prompt = intent_request['inputTranscript']
         output = invoke_fm(prompt)
         print("FSI Agent response: " + str(output))
